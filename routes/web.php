@@ -10,8 +10,16 @@ use App\Http\Controllers\AuthController;
 // Page d'accueil
 Route::get('/', [PageController::class, 'accueil'])->name('accueil');
 
-// Toutes les routes CRUD pour les contenus
-Route::resource('contenus', ContenuController::class);
+// Contenus : création, modification, suppression réservées aux utilisateurs connectés.
+// Ce bloc doit rester AVANT le suivant, sinon "create" serait pris pour un identifiant.
+Route::middleware('auth')->group(function () {
+    Route::resource('contenus', ContenuController::class)
+        ->only(['create', 'store', 'edit', 'update', 'destroy']);
+});
+
+// Contenus : consultation publique
+Route::resource('contenus', ContenuController::class)
+    ->only(['index', 'show']);
 
 // Toutes les routes CRUD pour les catégories
 Route::resource('categories', CategorieController::class)->parameters([

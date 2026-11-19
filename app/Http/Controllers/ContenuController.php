@@ -27,9 +27,10 @@ class ContenuController extends Controller
 
     public function store(StorePublicationRequest $request)
     {
-        $publication = Publication::create(
-            $request->validated() + ['user_id' => 1] // Provisoire jusqu'à la semaine 8
-        );
+        $publication = Publication::create([
+            ...$request->validated(),
+            'user_id' => auth()->id(),
+        ]);
 
         return redirect()
             ->route('contenus.show', $publication)
