@@ -6,6 +6,7 @@ use App\Http\Requests\StorePublicationRequest;
 use App\Http\Requests\UpdatePublicationRequest;
 use App\Models\Categorie;
 use App\Models\Publication;
+use Illuminate\Support\Facades\Gate;
 
 class ContenuController extends Controller
 {
@@ -45,12 +46,16 @@ class ContenuController extends Controller
 
     public function edit(Publication $contenu)
     {
+        Gate::authorize('update', $contenu);
+
         $categories = Categorie::all();
         return view('contenus.edit', ['publication' => $contenu, 'categories' => $categories]);
     }
 
     public function update(UpdatePublicationRequest $request, Publication $contenu)
     {
+        Gate::authorize('update', $contenu);
+
         $contenu->update($request->validated());
 
         return redirect()
@@ -60,6 +65,8 @@ class ContenuController extends Controller
 
     public function destroy(Publication $contenu)
     {
+        Gate::authorize('delete', $contenu);
+
         $contenu->delete();
 
         return redirect()
