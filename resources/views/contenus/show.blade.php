@@ -31,7 +31,20 @@
         <p>Aucun commentaire pour le moment.</p>
     @endforelse
 
-    <p style="margin-top: 20px;">
+      <p style="margin-top: 20px;">
         <a href="{{ route('contenus.index') }}">&larr; Retour à la liste</a>
+
+        @can('update', $publication)
+            | <a href="{{ route('contenus.edit', $publication) }}" style="color: blue;">Modifier</a>
+        @endcan
+
+        @can('delete', $publication)
+            |
+            <form method="POST" action="{{ route('contenus.destroy', $publication) }}" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" style="color: red; background: none; border: none; cursor: pointer;" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette publication ?');">Supprimer</button>
+            </form>
+        @endcan
     </p>
 @endsection
