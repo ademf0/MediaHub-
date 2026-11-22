@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Publication;
 
 class PageController extends Controller
 {
     public function accueil()
     {
-        return view('accueil');
+        $dernieres = Publication::with(['categorie', 'auteur'])->latest()->take(5)->get();
+        return view('accueil', compact('dernieres'));
     }
 
     public function aPropos()
