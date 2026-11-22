@@ -14,8 +14,7 @@
     @forelse ($publications as $publication)
         <x-carte titre="{{ $publication->titre }}">
             @if ($publication->image)
-                <img src="{{ Storage::url($publication->image) }}"
-                     alt="{{ $publication->titre }}"
+                <img src="{{ $publication->url_miniature }}"                     alt="{{ $publication->titre }}"
                      style="max-width: 100%; max-height: 200px; border-radius: 6px; margin-bottom: 10px;">
             @endif
 

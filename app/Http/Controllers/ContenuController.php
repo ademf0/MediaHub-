@@ -6,8 +6,11 @@ use App\Http\Requests\StorePublicationRequest;
 use App\Http\Requests\UpdatePublicationRequest;
 use App\Models\Categorie;
 use App\Models\Publication;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ContenuController extends Controller
 {
@@ -32,7 +35,7 @@ class ContenuController extends Controller
         $donnees = $request->validated();
 
         if ($request->hasFile('image')) {
-            $donnees['image'] = $request->file('image')->store('publications', 'public');
+            $donnees['image'] = $this->enregistrerImage($request->file('image'));
         }
 
         if ($request->hasFile('fichier_media')) {
@@ -72,12 +75,13 @@ class ContenuController extends Controller
 
         $donnees = $request->validated();
 
-        // Nouvelle image : on supprime l'ancienne avant d'enregistrer la nouvelle
+        // Nouvelle image : on supprime l'ancienne (et sa miniature) avant d'enregistrer la nouvelle
         if ($request->hasFile('image')) {
             if ($contenu->image) {
                 Storage::disk('public')->delete($contenu->image);
+                Storage::disk('public')->delete($contenu->cheminMiniature());
             }
-            $donnees['image'] = $request->file('image')->store('publications', 'public');
+            $donnees['image'] = $this->enregistrerImage($request->file('image'));
         }
 
         // Nouveau média audio/vidéo : même principe
@@ -108,5 +112,29 @@ class ContenuController extends Controller
         return redirect()
             ->route('contenus.index')
             ->with('succes', 'Publication supprimée avec succès.');
+    }
+
+    // Stocke l'image originale et génère une miniature de 400x300
+    private function enregistrerImage(UploadedFile $fichier): string
+    {
+        $chemin = $fichier->store('publications', 'public');
+
+        try {
+            $manager = new ImageManager(new Driver());
+
+            $miniature = $manager->read($fichier->getRealPath())
+                ->cover(400, 300)
+                ->toJpeg(80);
+
+            Storage::disk('public')->put(
+                'publications/miniatures/' . pathinfo($chemin, PATHINFO_FILENAME) . '.jpg',
+                (string) $miniature
+            );
+        } catch (\Throwable $e) {
+            // La miniature est facultative : on n'empêche pas la publication si elle échoue
+            report($e);
+        }
+
+        return $chemin;
     }
 }

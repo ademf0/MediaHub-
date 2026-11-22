@@ -19,11 +19,32 @@ class Publication extends Model
         static::forceDeleting(function (Publication $publication) {
             if ($publication->image) {
                 Storage::disk('public')->delete($publication->image);
+                Storage::disk('public')->delete($publication->cheminMiniature());
             }
             if ($publication->fichier_media) {
                 Storage::disk('public')->delete($publication->fichier_media);
             }
         });
+    }
+
+    // Chemin de la miniature associée à l'image (null s'il n'y a pas d'image)
+    public function cheminMiniature(): ?string
+    {
+        return $this->image
+            ? 'publications/miniatures/' . pathinfo($this->image, PATHINFO_FILENAME) . '.jpg'
+            : null;
+    }
+
+    // URL de la miniature, ou de l'image originale si la miniature n'existe pas
+    public function getUrlMiniatureAttribute(): ?string
+    {
+        $miniature = $this->cheminMiniature();
+
+        if ($miniature && Storage::disk('public')->exists($miniature)) {
+            return Storage::url($miniature);
+        }
+
+        return $this->image ? Storage::url($this->image) : null;
     }
 
     public function categorie()
