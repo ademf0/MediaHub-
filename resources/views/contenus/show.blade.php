@@ -4,6 +4,19 @@
 
 @section('contenu')
     <h1>{{ $publication->titre }}</h1>
+
+    @if ($publication->image)
+        <img src="{{ Storage::url($publication->image) }}"
+             alt="{{ $publication->titre }}"
+             style="max-width: 100%; max-height: 400px; border-radius: 6px; margin-bottom: 15px;">
+    @endif
+
+    @if ($publication->fichier_media && $publication->type_media === 'audio')
+        <p><audio controls src="{{ Storage::url($publication->fichier_media) }}" style="width: 100%;"></audio></p>
+    @elseif ($publication->fichier_media && $publication->type_media === 'video')
+        <p><video controls src="{{ Storage::url($publication->fichier_media) }}" style="max-width: 100%;"></video></p>
+    @endif
+
     <p><strong>Auteur :</strong> {{ $publication->auteur->name }}</p>
     <p><strong>Catégorie :</strong> {{ $publication->categorie->nom }}</p>
     <p><strong>Tags :</strong>
@@ -14,7 +27,7 @@
     @empty
         <em>Aucun tag</em>
     @endforelse
-</p>
+    </p>
 
     <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid #333;">
         {!! nl2br(e($publication->contenu)) !!}
@@ -31,7 +44,7 @@
         <p>Aucun commentaire pour le moment.</p>
     @endforelse
 
-      <p style="margin-top: 20px;">
+    <p style="margin-top: 20px;">
         <a href="{{ route('contenus.index') }}">&larr; Retour à la liste</a>
 
         @can('update', $publication)

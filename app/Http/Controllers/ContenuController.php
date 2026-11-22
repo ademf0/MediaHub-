@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePublicationRequest;
 use App\Models\Categorie;
 use App\Models\Publication;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class ContenuController extends Controller
 {
@@ -26,7 +27,7 @@ class ContenuController extends Controller
         return view('contenus.create', compact('categories'));
     }
 
-        public function store(StorePublicationRequest $request)
+    public function store(StorePublicationRequest $request)
     {
         $donnees = $request->validated();
 
@@ -69,7 +70,29 @@ class ContenuController extends Controller
     {
         Gate::authorize('update', $contenu);
 
-        $contenu->update($request->validated());
+        $donnees = $request->validated();
+
+        // Nouvelle image : on supprime l'ancienne avant d'enregistrer la nouvelle
+        if ($request->hasFile('image')) {
+            if ($contenu->image) {
+                Storage::disk('public')->delete($contenu->image);
+            }
+            $donnees['image'] = $request->file('image')->store('publications', 'public');
+        }
+
+        // Nouveau média audio/vidéo : même principe
+        if ($request->hasFile('fichier_media')) {
+            if ($contenu->fichier_media) {
+                Storage::disk('public')->delete($contenu->fichier_media);
+            }
+            $fichier = $request->file('fichier_media');
+            $donnees['fichier_media'] = $fichier->store('medias', 'public');
+            $donnees['type_media'] = str_starts_with($fichier->getMimeType(), 'audio')
+                ? 'audio'
+                : 'video';
+        }
+
+        $contenu->update($donnees);
 
         return redirect()
             ->route('contenus.show', $contenu)

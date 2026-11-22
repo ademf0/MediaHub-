@@ -13,6 +13,16 @@
 
     @forelse ($publications as $publication)
         <x-carte titre="{{ $publication->titre }}">
+            @if ($publication->image)
+                <img src="{{ Storage::url($publication->image) }}"
+                     alt="{{ $publication->titre }}"
+                     style="max-width: 100%; max-height: 200px; border-radius: 6px; margin-bottom: 10px;">
+            @endif
+
+            @if ($publication->type_media)
+                <p><em>{{ $publication->type_media === 'audio' ? '🎵 Contient un fichier audio' : '🎬 Contient une vidéo' }}</em></p>
+            @endif
+
             <p><strong>Auteur :</strong> {{ $publication->auteur->name }}</p>
             <p><strong>Catégorie :</strong> {{ $publication->categorie->nom }}</p>
             <p><strong>Commentaires :</strong> {{ $publication->commentaires_count }}</p>

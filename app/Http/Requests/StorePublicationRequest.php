@@ -17,6 +17,8 @@ class StorePublicationRequest extends FormRequest
             'titre' => 'required|string|min:10|max:255|unique:publications,titre',
             'contenu' => 'required|string|min:20',
             'categorie_id' => 'required|exists:categories,id',
+            'image' => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'fichier_media' => 'nullable|file|mimes:mp3,mp4,wav|max:20480',
         ];
     }
 
@@ -31,6 +33,14 @@ class StorePublicationRequest extends FormRequest
             'contenu.min' => 'Le contenu doit contenir au moins 20 caractères.',
             'categorie_id.required' => 'Veuillez choisir une catégorie.',
             'categorie_id.exists' => "La catégorie choisie n'existe pas.",
+            
+            'image.image' => "Le fichier doit être une image.",
+            'image.mimes' => "L'image doit être au format JPG, PNG ou WEBP.",
+            'image.max' => "L'image ne doit pas dépasser 2 Mo.",
+            'image.uploaded' => "L'image n'a pas pu être envoyée (fichier trop volumineux).",
+            'fichier_media.mimes' => 'Le média doit être au format MP3, WAV ou MP4.',
+            'fichier_media.max' => 'Le média ne doit pas dépasser 20 Mo.',
+            'fichier_media.uploaded' => "Le média n'a pas pu être envoyé (fichier trop volumineux).",
 
         ];
     }

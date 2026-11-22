@@ -43,6 +43,20 @@
                 <span class="erreur-champ" style="color: #b00020;">{{ $message }}</span>
             @enderror
         </p>
+                <p>
+            <label>Image (JPG, PNG ou WEBP, 2 Mo maximum) :</label><br>
+            <input type="file" name="image" accept="image/jpeg,image/png,image/webp">
+            @error('image')
+                <span class="erreur-champ" style="color: #b00020;">{{ $message }}</span>
+            @enderror
+        </p>
+        <p>
+            <label>Audio ou vidéo (MP3, WAV ou MP4, 20 Mo maximum) :</label><br>
+            <input type="file" name="fichier_media" accept="audio/*,video/mp4">
+            @error('fichier_media')
+                <span class="erreur-champ" style="color: #b00020;">{{ $message }}</span>
+            @enderror
+        </p>
         <button type="submit" style="padding: 10px 20px;">Publier</button>
     </form>
 @endsection
