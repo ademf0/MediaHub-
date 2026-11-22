@@ -7,16 +7,22 @@ use App\Http\Requests\StorePublicationRequest;
 use App\Http\Requests\UpdatePublicationRequest;
 use App\Http\Resources\PublicationResource;
 use App\Models\Publication;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class PublicationController extends Controller
 {
-    // GET /api/publications : liste paginée (accès public)
-    public function index()
+    // GET /api/publications : liste paginée (accès public), filtrable par ?categorie_id=
+    public function index(Request $request)
     {
         $publications = Publication::with(['categorie', 'auteur'])
+            ->when(
+                $request->filled('categorie_id'),
+                fn ($requete) => $requete->where('categorie_id', $request->integer('categorie_id'))
+            )
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return PublicationResource::collection($publications);
     }
