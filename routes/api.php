@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategorieController as ApiCategorieController;
 use App\Http\Controllers\Api\PublicationController;
 use Illuminate\Support\Facades\Route;
 
 // Obtention d'un jeton
 Route::post('/connexion', [AuthController::class, 'connecter']);
 
-// Lecture publique des publications
+// Lecture publique
+Route::get('/categories', [ApiCategorieController::class, 'index']);
+
 Route::apiResource('publications', PublicationController::class)
     ->only(['index', 'show']);
 
