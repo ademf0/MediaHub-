@@ -26,12 +26,25 @@ class ContenuController extends Controller
         return view('contenus.create', compact('categories'));
     }
 
-    public function store(StorePublicationRequest $request)
+        public function store(StorePublicationRequest $request)
     {
-        $publication = Publication::create([
-            ...$request->validated(),
-            'user_id' => auth()->id(),
-        ]);
+        $donnees = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $donnees['image'] = $request->file('image')->store('publications', 'public');
+        }
+
+        if ($request->hasFile('fichier_media')) {
+            $fichier = $request->file('fichier_media');
+            $donnees['fichier_media'] = $fichier->store('medias', 'public');
+            $donnees['type_media'] = str_starts_with($fichier->getMimeType(), 'audio')
+                ? 'audio'
+                : 'video';
+        }
+
+        $donnees['user_id'] = auth()->id();
+
+        $publication = Publication::create($donnees);
 
         return redirect()
             ->route('contenus.show', $publication)

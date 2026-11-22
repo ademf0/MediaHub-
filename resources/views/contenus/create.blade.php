@@ -13,7 +13,7 @@
         </ul>
     @endif
 
-    <form method="POST" action="{{ route('contenus.store') }}" novalidate>
+        <form method="POST" action="{{ route('contenus.store') }}" enctype="multipart/form-data" novalidate>
         @csrf
         <p>
             <label>Titre :</label><br>
