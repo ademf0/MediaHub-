@@ -26,7 +26,7 @@ class ContenuController extends Controller
 
     public function create()
     {
-        $categories = Categorie::all();
+        $categories = Categorie::pourFormulaires();
         return view('contenus.create', compact('categories'));
     }
 
@@ -45,7 +45,8 @@ class ContenuController extends Controller
                 ? 'audio'
                 : 'video';
         }
-            if ($request->hasFile('document')) {
+
+        if ($request->hasFile('document')) {
             $donnees['document'] = $request->file('document')->store('documents', 'local');
         }
 
@@ -68,7 +69,7 @@ class ContenuController extends Controller
     {
         Gate::authorize('update', $contenu);
 
-        $categories = Categorie::all();
+        $categories = Categorie::pourFormulaires();
         return view('contenus.edit', ['publication' => $contenu, 'categories' => $categories]);
     }
 
@@ -99,7 +100,8 @@ class ContenuController extends Controller
                 : 'video';
         }
 
-                if ($request->hasFile('document')) {
+        // Nouveau document privé
+        if ($request->hasFile('document')) {
             if ($contenu->document) {
                 Storage::disk('local')->delete($contenu->document);
             }
@@ -124,6 +126,22 @@ class ContenuController extends Controller
             ->with('succes', 'Publication supprimée avec succès.');
     }
 
+    // Sert le document privé, uniquement à son auteur ou à un administrateur
+    public function document(Publication $publication)
+    {
+        Gate::authorize('voirDocument', $publication);
+
+        abort_unless(
+            $publication->document && Storage::disk('local')->exists($publication->document),
+            404
+        );
+
+        return Storage::disk('local')->response(
+            $publication->document,
+            'document-' . $publication->id . '.pdf'
+        );
+    }
+
     // Stocke l'image originale et génère une miniature de 400x300
     private function enregistrerImage(UploadedFile $fichier): string
     {
@@ -146,20 +164,5 @@ class ContenuController extends Controller
         }
 
         return $chemin;
-    }
-        // Sert le document privé, uniquement à son auteur ou à un administrateur
-    public function document(Publication $publication)
-    {
-        Gate::authorize('voirDocument', $publication);
-
-        abort_unless(
-            $publication->document && Storage::disk('local')->exists($publication->document),
-            404
-        );
-
-        return Storage::disk('local')->response(
-            $publication->document,
-            'document-' . $publication->id . '.pdf'
-        );
     }
 }
