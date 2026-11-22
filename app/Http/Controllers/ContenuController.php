@@ -45,6 +45,9 @@ class ContenuController extends Controller
                 ? 'audio'
                 : 'video';
         }
+            if ($request->hasFile('document')) {
+            $donnees['document'] = $request->file('document')->store('documents', 'local');
+        }
 
         $donnees['user_id'] = auth()->id();
 
@@ -96,6 +99,13 @@ class ContenuController extends Controller
                 : 'video';
         }
 
+                if ($request->hasFile('document')) {
+            if ($contenu->document) {
+                Storage::disk('local')->delete($contenu->document);
+            }
+            $donnees['document'] = $request->file('document')->store('documents', 'local');
+        }
+
         $contenu->update($donnees);
 
         return redirect()
@@ -136,5 +146,20 @@ class ContenuController extends Controller
         }
 
         return $chemin;
+    }
+        // Sert le document privé, uniquement à son auteur ou à un administrateur
+    public function document(Publication $publication)
+    {
+        Gate::authorize('voirDocument', $publication);
+
+        abort_unless(
+            $publication->document && Storage::disk('local')->exists($publication->document),
+            404
+        );
+
+        return Storage::disk('local')->response(
+            $publication->document,
+            'document-' . $publication->id . '.pdf'
+        );
     }
 }

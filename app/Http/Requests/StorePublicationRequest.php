@@ -42,6 +42,11 @@ class StorePublicationRequest extends FormRequest
             'fichier_media.max' => 'Le média ne doit pas dépasser 20 Mo.',
             'fichier_media.uploaded' => "Le média n'a pas pu être envoyé (fichier trop volumineux).",
 
+            'fichier_media.file' => 'Un seul fichier média est autorisé par publication.',
+            'document' => 'nullable|file|mimes:pdf|max:5120',
+            'document.mimes' => 'Le document doit être au format PDF.',
+            'document.max' => 'Le document ne doit pas dépasser 5 Mo.',
+            'document.uploaded' => "Le document n'a pas pu être envoyé (fichier trop volumineux).",
         ];
     }
 }

@@ -19,4 +19,9 @@ class PublicationPolicy
     {
         return $this->update($utilisateur, $publication);
     }
+        // Le document n'est visible que par l'auteur ou un administrateur
+    public function voirDocument(User $utilisateur, Publication $publication): bool
+    {
+        return $this->update($utilisateur, $publication);
+    }
 }

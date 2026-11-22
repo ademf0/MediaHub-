@@ -11,7 +11,7 @@ class Publication extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['titre', 'contenu', 'categorie_id', 'user_id', 'image', 'fichier_media', 'type_media'];
+    protected $fillable = ['titre', 'contenu', 'categorie_id', 'user_id', 'image', 'fichier_media', 'type_media', 'document'];
 
     protected static function booted(): void
     {
@@ -23,6 +23,9 @@ class Publication extends Model
             }
             if ($publication->fichier_media) {
                 Storage::disk('public')->delete($publication->fichier_media);
+            }
+                if ($publication->document) {
+                Storage::disk('local')->delete($publication->document);
             }
         });
     }

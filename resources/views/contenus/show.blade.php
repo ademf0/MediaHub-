@@ -19,6 +19,11 @@
 
     <p><strong>Auteur :</strong> {{ $publication->auteur->name }}</p>
     <p><strong>Catégorie :</strong> {{ $publication->categorie->nom }}</p>
+        @can('voirDocument', $publication)
+        @if ($publication->document)
+            <p><a href="{{ route('documents.show', $publication) }}" target="_blank">📄 Voir le document PDF</a></p>
+        @endif
+    @endcan
     <p><strong>Tags :</strong>
     @forelse ($publication->tags as $tag)
         <span style="background: #eee; padding: 3px 8px; border-radius: 4px; font-size: 0.9em; margin-right: 5px;">

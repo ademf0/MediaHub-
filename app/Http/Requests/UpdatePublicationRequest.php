@@ -47,6 +47,10 @@ class UpdatePublicationRequest extends FormRequest
             'fichier_media.mimes' => 'Le média doit être au format MP3, WAV ou MP4.',
             'fichier_media.max' => 'Le média ne doit pas dépasser 20 Mo.',
             'fichier_media.uploaded' => "Le média n'a pas pu être envoyé (fichier trop volumineux).",
+             'document' => 'nullable|file|mimes:pdf|max:5120',
+            'document.mimes' => 'Le document doit être au format PDF.',
+            'document.max' => 'Le document ne doit pas dépasser 5 Mo.',
+            'document.uploaded' => "Le document n'a pas pu être envoyé (fichier trop volumineux).",
         ];
     }
 }

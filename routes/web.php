@@ -15,6 +15,7 @@ Route::get('/', [PageController::class, 'accueil'])->name('accueil');
 Route::middleware('auth')->group(function () {
     Route::resource('contenus', ContenuController::class)
         ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/documents/{publication}', [ContenuController::class, 'document'])->name('documents.show');
 });
 
 // Contenus : consultation publique
