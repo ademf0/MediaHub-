@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use App\Events\PublicationCreee;
 
 class ContenuController extends Controller
 {
@@ -53,7 +54,7 @@ class ContenuController extends Controller
         $donnees['user_id'] = auth()->id();
 
         $publication = Publication::create($donnees);
-
+        PublicationCreee::dispatch($publication);
         return redirect()
             ->route('contenus.show', $publication)
             ->with('succes', 'Publication créée avec succès.');
