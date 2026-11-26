@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Categorie;
+use App\Models\Publication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -60,5 +62,20 @@ class CacheCategoriesTest extends TestCase
 
         $reponse->assertOk();
         $reponse->assertSeeText('Podcast');
+    }
+
+    public function test_les_formulaires_ignorent_un_ancien_cache_de_categories_incompatible(): void
+    {
+        $categorie = Categorie::factory()->create(['nom' => 'Podcast', 'slug' => 'podcast']);
+        $utilisateur = User::factory()->create();
+        $publication = Publication::factory()->create([
+            'categorie_id' => $categorie->id,
+            'user_id' => $utilisateur->id,
+        ]);
+
+        Cache::put('categories.options', ['Podcast'], 3600);
+
+        $this->actingAs($utilisateur)->get('/contenus/create')->assertOk();
+        $this->actingAs($utilisateur)->get("/contenus/{$publication->id}/edit")->assertOk();
     }
 }
